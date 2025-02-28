@@ -1,0 +1,76 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  api:
+    build: ./cmd/api
+    ports:
+      - "${API_PORT}:8080"
+    depends_on:
+      - postgres
+      - db
+    environment:
+      - API_PORT=${API_PORT}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+  db:
+    build: ./cmd/db
+    ports:
+      - "${DB_PORT}:8081"
+    depends_on:
+      - postgres
+    environment:
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      # Опционально: добавляем Redis для БД-сервиса (закомментировано)
+      # - REDIS_HOST=${REDIS_HOST}
+      # - REDIS_PORT=${REDIS_PORT}
+      # - REDIS_PASSWORD=${REDIS_PASSWORD}
+  # Redis (опционально, закомментировано для будущего использования)
+  # redis:
+  #   image: redis:latest
+  #   ports:
+  #     - "${REDIS_PORT}:6379"
+  #   environment:
+  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
+  # Kafka (опционально, закомментировано для будущего использования)
+  # kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_BROKERS}
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #   depends_on:
+  #     - zookeeper
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:latest
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  # kafka-worker:
+  #   build: ./cmd/kafka
+  #   depends_on:
+  #     - kafka
+  #   environment:
+  #     - KAFKA_BROKERS=${KAFKA_BROKERS}
+  #     - KAFKA_TOPIC=${KAFKA_TOPIC}
+volumes:
+  postgres_data:
