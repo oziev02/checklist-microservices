@@ -23,6 +23,7 @@ func markTaskDoneHandler(c *gin.Context) {
 	id := c.Query("id")
 	if id == "" {
 		c.JSON(400, gin.H{"error": "Task ID is required"})
+		return
 	}
 	c.JSON(200, gin.H{"message": "Mark task done endpoint placeholder", "id": id})
 }
