@@ -5,6 +5,7 @@ import "github.com/gin-gonic/gin"
 func RegisterRoutes(r *gin.Engine) {
 	r.POST("/register", registerHandler)
 	r.POST("/login", loginHandler)
+	r.POST("/2fa/setup", setup2FAHandler)
 	r.POST("/2fa/verify", verify2FAHandler)
 }
 
