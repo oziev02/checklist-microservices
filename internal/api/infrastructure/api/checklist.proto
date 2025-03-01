@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package checklist;
+
+option go_package = "github.com/oziev02/checklist-microservices/internal/api/infrastructure/api";
+
+service ChecklistService {
+  rpc CreateTask (TaskRequest) returns (TaskResponse);
+  rpc ListTasks (ListTasksRequest) returns (ListTasksResponse);
+  rpc DeleteTask (TaskIDRequest) returns (Empty);
+  rpc MarkTaskDone (TaskIDRequest) returns (TaskResponse);
+  rpc CreateUser (UserRequest) returns (UserResponse);
+  rpc UpdateProfile (UpdateProfileRequest) returns (UserResponse);
+  rpc GetUserByEmail (EmailRequest) returns (UserResponse);
+}
+
+message TaskRequest {
+  string title = 1;
+  string content = 2;
+  string user_id = 3;
+}
+
+message TaskResponse {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  bool done = 4;
+  string user_id = 5;
+}
+
+message ListTasksRequest {
+  string user_id = 1;
+}
+
+message ListTasksResponse {
+  repeated TaskResponse tasks = 1;
+}
+
+message TaskIDRequest {
+  string id = 1;
+}
+
+message UserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message UserResponse {
+  string id = 1;
+  string email = 2;
+  string password = 3;
+  string avatar = 4;
+  string description = 5;
+  map<string, string> socials = 6;
+  bool twofa_enabled = 7;
+  string twofa_secret = 8;
+}
+
+message UpdateProfileRequest {
+  string user_id = 1;
+  string avatar = 2;
+  string description = 3;
+  map<string, string> socials = 4;
+}
+
+message EmailRequest {
+  string email = 1;
+}
+
+message Empty {}
