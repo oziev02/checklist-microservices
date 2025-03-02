@@ -106,8 +106,8 @@ func (r *PostgresRepository) UpdateProfile(ctx context.Context, userID, avatar, 
 
 	user := &entities.User{}
 	err := r.db.QueryRowContext(ctx, query, userID, avatar, description).Scan(
-		&userID, &user.Email, &user.Password, &user.Avatar, &user.Description, &user.TwoFAEnabled, &user.TwoFASecret
-		)
+		&userID, &user.Email, &user.Password, &user.Avatar, &user.Description, &user.TwoFAEnabled, &user.TwoFASecret,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to update profile: %v", err)
 	}
@@ -140,7 +140,7 @@ func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (
     `
 	err := r.db.QueryRowContext(ctx, query, email).Scan(
 		&user.ID, &user.Email, &user.Password, &user.Avatar, &user.Description, &user.TwoFAEnabled, &user.TwoFASecret,
-		)
+	)
 	if err == sql.ErrNoRows {
 		return nil, nil // Пользователь не найден
 	}
