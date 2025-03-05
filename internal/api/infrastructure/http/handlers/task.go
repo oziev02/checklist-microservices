@@ -24,11 +24,15 @@ func (h *TaskHandler) createTaskHandler(c *gin.Context) {
 		return
 	}
 
-	// Имитация userID (позже получим из JWT)
-	userID := "placeholder-user-id"
+	// Получаем userID из контекста (из JWT)
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "User ID not found in context"})
+		return
+	}
 
 	// Отправляем запрос в БД-сервис через gRPC
-	resp, err := h.grpcClient.CreateTask(context.Background(), req.Title, req.Content, userID)
+	resp, err := h.grpcClient.CreateTask(context.Background(), req.Title, req.Content, userID.(string))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to create task"})
 		return
@@ -44,11 +48,15 @@ func (h *TaskHandler) createTaskHandler(c *gin.Context) {
 }
 
 func (h *TaskHandler) listTasksHandler(c *gin.Context) {
-	// Имитация userID (позже получим из JWT)
-	userID := "placeholder-user-id"
+	// Получаем userID из контекста
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "User ID not found in context"})
+		return
+	}
 
 	// Отправляем запрос в БД-сервис через gRPC
-	resp, err := h.grpcClient.ListTasks(context.Background(), userID)
+	resp, err := h.grpcClient.ListTasks(context.Background(), userID.(string))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to list tasks"})
 		return

@@ -16,8 +16,15 @@ func NewProfileHandler(grpcClient *grpc_client.Client) *ProfileHandler {
 }
 
 func (h *ProfileHandler) getProfileHandler(c *gin.Context) {
+	// Получаем userID из контекста
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
 	// Отправляем запрос в БД-сервис через gRPC
-	userResp, err := h.grpcClient.GetUserByEmail(context.Background(), "placeholder-email@example.com")
+	userResp, err := h.grpcClient.GetUserByEmail(context.Background(), "placeholder-email@example.com") // Заменим позже на поиск по userID
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get user profile"})
 		return
@@ -47,11 +54,15 @@ func (h *ProfileHandler) updateProfileHandler(c *gin.Context) {
 		return
 	}
 
-	// Имитация userID (позже получим из JWT)
-	userID := "placeholder-user-id"
+	// Получаем userID из контекста
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(401, gin.H{"error": "User ID not found in context"})
+		return
+	}
 
 	// Отправляем запрос в БД-сервис через gRPC
-	userResp, err := h.grpcClient.UpdateProfile(context.Background(), userID, req.Avatar, req.Description, req.Socials)
+	userResp, err := h.grpcClient.UpdateProfile(context.Background(), userID.(string), req.Avatar, req.Description, req.Socials)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to update profile"})
 		return
